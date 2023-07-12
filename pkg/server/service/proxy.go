@@ -44,15 +44,10 @@ func buildProxy(passHostHeader *bool, responseForwarding *dynamic.ResponseForwar
 					u = parsedURL
 				}
 			}
-
 			outReq.URL.Path = u.Path
 			outReq.URL.RawPath = u.RawPath
 			outReq.URL.RawQuery = strings.ReplaceAll(u.RawQuery, ";", "&")
 			outReq.RequestURI = "" // Outgoing request should not have RequestURI
-
-			outReq.Proto = "HTTP/1.1"
-			outReq.ProtoMajor = 1
-			outReq.ProtoMinor = 1
 
 			if _, ok := outReq.Header["User-Agent"]; !ok {
 				outReq.Header.Set("User-Agent", "")
@@ -62,23 +57,12 @@ func buildProxy(passHostHeader *bool, responseForwarding *dynamic.ResponseForwar
 			if passHostHeader != nil && !*passHostHeader {
 				outReq.Host = outReq.URL.Host
 			}
+			outReq.Host = outReq.URL.Host
+			outReq.RequestURI = outReq.URL.Path
 
-			// Even if the websocket RFC says that headers should be case-insensitive,
-			// some servers need Sec-WebSocket-Key, Sec-WebSocket-Extensions, Sec-WebSocket-Accept,
-			// Sec-WebSocket-Protocol and Sec-WebSocket-Version to be case-sensitive.
-			// https://tools.ietf.org/html/rfc6455#page-20
-			outReq.Header["Sec-WebSocket-Key"] = outReq.Header["Sec-Websocket-Key"]
-			outReq.Header["Sec-WebSocket-Extensions"] = outReq.Header["Sec-Websocket-Extensions"]
-			outReq.Header["Sec-WebSocket-Accept"] = outReq.Header["Sec-Websocket-Accept"]
-			outReq.Header["Sec-WebSocket-Protocol"] = outReq.Header["Sec-Websocket-Protocol"]
-			outReq.Header["Sec-WebSocket-Version"] = outReq.Header["Sec-Websocket-Version"]
-			delete(outReq.Header, "Sec-Websocket-Key")
-			delete(outReq.Header, "Sec-Websocket-Extensions")
-			delete(outReq.Header, "Sec-Websocket-Accept")
-			delete(outReq.Header, "Sec-Websocket-Protocol")
-			delete(outReq.Header, "Sec-Websocket-Version")
 		},
 		Transport:     roundTripper,
+		//Transport:     http.DefaultTransport,
 		FlushInterval: time.Duration(flushInterval),
 		BufferPool:    bufferPool,
 		ErrorHandler: func(w http.ResponseWriter, request *http.Request, err error) {

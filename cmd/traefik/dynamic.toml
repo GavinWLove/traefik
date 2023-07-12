@@ -1,0 +1,11 @@
+[http]
+  [http.routers]
+    [http.routers.my-app]
+      rule = "PathPrefix(`/today`)"
+      service = "my-app"
+
+  [http.services]
+    [http.services.my-app]
+      [http.services.my-app.loadBalancer]
+        [[http.services.my-app.loadBalancer.servers]]
+          url = "https://query.asilu.com"

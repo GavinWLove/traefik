@@ -15,7 +15,7 @@ import (
 	"github.com/traefik/traefik/v2/pkg/redactor"
 	"github.com/traefik/traefik/v2/pkg/version"
 )
-
+//TODO ww remove codes cause: no safe
 // collectorURL URL where the stats are sent.
 const collectorURL = "https://collect.traefik.io/9vxmmkcdmalbdi635d4jgc5p5rx0h7h8"
 

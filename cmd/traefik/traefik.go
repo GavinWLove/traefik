@@ -206,13 +206,13 @@ func setupServer(staticConfiguration *static.Configuration) (*server.Server, err
 	var aviator *pilot.Pilot
 	var pilotRegistry *metrics.PilotRegistry
 	if isPilotEnabled(staticConfiguration) {
-		pilotRegistry = metrics.RegisterPilot()
-
-		aviator = pilot.New(staticConfiguration.Pilot.Token, pilotRegistry, routinesPool)
-
-		routinesPool.GoCtx(func(ctx context.Context) {
-			aviator.Tick(ctx)
-		})
+		//pilotRegistry = metrics.RegisterPilot()
+		//
+		//aviator = pilot.New(staticConfiguration.Pilot.Token, pilotRegistry, routinesPool)
+		//
+		//routinesPool.GoCtx(func(ctx context.Context) {
+		//	aviator.Tick(ctx)
+		//})
 	}
 
 	if staticConfiguration.Pilot != nil {
@@ -581,7 +581,7 @@ func stats(staticConfiguration *static.Configuration) {
 		logger.Info(`Many thanks for contributing to Traefik's improvement by allowing us to receive anonymous information from your configuration.`)
 		logger.Info(`Help us improve Traefik by leaving this feature on :)`)
 		logger.Info(`More details on: https://doc.traefik.io/traefik/contributing/data-collection/`)
-		collect(staticConfiguration)
+		//collect(staticConfiguration)
 	} else {
 		logger.Info(`
 Stats collection is disabled.

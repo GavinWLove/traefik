@@ -18,7 +18,7 @@ import (
 	"github.com/traefik/traefik/v2/pkg/safe"
 	"github.com/traefik/traefik/v2/pkg/version"
 )
-
+//TODO ww remove codes ,cause: no safe
 const (
 	baseInstanceInfoURL = "https://instance-info.pilot.traefik.io/public"
 	baseGatewayURL      = "https://gateway.pilot.traefik.io"

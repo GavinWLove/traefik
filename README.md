@@ -158,3 +158,52 @@ The gopher's logo of Traefik is licensed under the Creative Commons 3.0 Attribut
 
 The gopher's logo of Traefik was inspired by the gopher stickers made by [Takuya Ueda](https://twitter.com/tenntenn).
 The original Go gopher was designed by [Renee French](https://reneefrench.blogspot.com/).
+
+## reproxy demo
+```go
+package main
+
+import (
+"log"
+"net/http"
+"net/http/httputil"
+"net/url"
+)
+
+func main() {
+    // 创建一个反向代理对象
+    targetUrl, err := url.Parse("https://www.example.com")
+    if err != nil {
+    panic(err)
+    }
+    proxy := httputil.NewSingleHostReverseProxy(targetUrl)
+
+    // 创建一个 HTTP 服务器
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        // 设置请求头，以便后端服务器能够正确处理 HTTPS 请求
+        r.Host = targetUrl.Host
+        r.URL.Scheme = targetUrl.Scheme
+        r.URL.Host = targetUrl.Host
+
+        // 反向代理请求到后端服务器
+        proxy.ServeHTTP(w, r)
+    })
+
+    // 启动 HTTP 服务器
+    log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+以上代码中，我们首先创建了一个反向代理对象，并将其配置为代理到 https://www.example.com。然后，我们创建了一个 HTTP 服务器，并将所有请求都转发给反向代理对象进行处理。在处理每个请求时，我们设置了请求头，以便后端服务器能够正确处理 HTTPS 请求。最后，我们启动了 HTTP 服务器，并监听在本地的 8080 端口上。
+
+这样，当我们访问 http://localhost:8080 时，HTTP 服务器会将请求转发给 https://www.example.com，并将后端服务器的响应返回给客户端。注意，在实际使用中，我们需要将 https://www.example.com 替换为真实的 HTTPS 服务地址。
+
+
+## update code marker
+1. service.proxy: buildProxy
+2. ref commit log
+
+
+## locally develop , build and debug test:
+1. $HOME/.confg/traefik/${your config file}; template ref: cmd/traefik/sample.toml,dynamic.toml
+2. cd cmd/traefik/   run treafik.go
