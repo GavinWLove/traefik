@@ -1,0 +1,21 @@
+http:
+  routers:
+    my-app:
+      rule: PathPrefix(`/`)
+      service: my-app
+      middlewares:
+        - my-app
+  middlewares:
+    my-app:
+      forwardAuth:
+        address: http://localhost:8000/api/auth/token
+        trustForwardHeader: true
+        authResponseHeadersRegex: ^X-
+        authResponseHeaders:
+          - "jk-xxxx"
+          - "jk-Header"
+  services:
+    my-app:
+      loadBalancer:
+        servers:
+          - url: http://localhost:8000

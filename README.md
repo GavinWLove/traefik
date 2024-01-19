@@ -159,7 +159,7 @@ The gopher's logo of Traefik is licensed under the Creative Commons 3.0 Attribut
 The gopher's logo of Traefik was inspired by the gopher stickers made by [Takuya Ueda](https://twitter.com/tenntenn).
 The original Go gopher was designed by [Renee French](https://reneefrench.blogspot.com/).
 
-## reproxy demo
+## 反向代理 demo
 ```go
 package main
 
@@ -199,11 +199,23 @@ func main() {
 这样，当我们访问 http://localhost:8080 时，HTTP 服务器会将请求转发给 https://www.example.com，并将后端服务器的响应返回给客户端。注意，在实际使用中，我们需要将 https://www.example.com 替换为真实的 HTTPS 服务地址。
 
 
-## update code marker
+## 变更记录
 1. service.proxy: buildProxy
 2. ref commit log
 
 
-## locally develop , build and debug test:
-1. $HOME/.confg/traefik/${your config file}; template ref: cmd/traefik/sample.toml,dynamic.toml
-2. cd cmd/traefik/   run treafik.go
+## 启动方式-cmd
+```shell
+./traefik --configfile=sample.toml
+```
+
+## 启动方式-idea
+```shell
+go build github.com/traefik/traefik/v2/cmd/traefik
+程序参数配置 --configfile=sample.toml
+```
+
+## 启动方式-docker
+```shell
+docker run --rm  -p 8099:8099 -v sample.toml:/etc/traefik/traefik.toml harbor.jkservice.org/df/traefik:fr0718
+```

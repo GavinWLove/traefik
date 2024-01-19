@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-config
+  namespace: traefik
+data:
+  traefik.yaml: |
+    api:
+      dashboard: true
+      insecure: true
+    providers:
+      http:
+        endpoint: http://localhost:8000/api/config/yaml
+        pollInterval: 5s
+    accessLog: {}
+    entryPoints:
+      web:
+        address: ":80"
+      websecure:
+        address: ":443"
+    log:
+      level: DEBUG
+

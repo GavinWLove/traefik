@@ -1,11 +1,16 @@
 [http]
   [http.routers]
     [http.routers.my-app]
-      rule = "PathPrefix(`/today`)"
+      rule = "PathPrefix(`/`)"
       service = "my-app"
-
+      middlewares = ["my-app"]
+  [http.middlewares]
+    [http.middlewares.my-app.forwardAuth]
+      address = "http://localhost:8000/api/auth/token"
+      trustForwardHeader = true
+      authResponseHeadersRegex = "^X-"
   [http.services]
     [http.services.my-app]
       [http.services.my-app.loadBalancer]
         [[http.services.my-app.loadBalancer.servers]]
-          url = "https://query.asilu.com"
+          url = "http://localhost:8000"

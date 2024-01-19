@@ -1,0 +1,10 @@
+[entryPoints]
+  [entryPoints.web]
+    address = ":8099"
+
+[api]
+  dashboard = true
+
+[providers.file]
+  filename = "/Users/gavin/workspace/GitHub/traefik/cmd/traefik/dynamic.toml"
+  watch = true

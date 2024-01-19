@@ -1,0 +1,6 @@
+include:
+  - project: "JKStack/sre/devOps"
+    ref: master
+    file:
+      - '/cicd/gitlab-ci/templates/projects/ca/ca-intention.yml'
+
