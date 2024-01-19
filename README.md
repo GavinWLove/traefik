@@ -219,3 +219,61 @@ go build github.com/traefik/traefik/v2/cmd/traefik
 ```shell
 docker run --rm  -p 8099:8099 -v sample.toml:/etc/traefik/traefik.toml harbor.jkservice.org/df/traefik:fr0718
 ```
+
+## 测试说明
+1. 启动tests/http-config服务，访问地址：`http://localhost:8000`
+2. 启动proxy-service服务，访问地址：`http://localhost:8099`
+3. 提供动态配置接口
+    ```toml
+    [providers.http]
+      endpoint = "http://localhost:8000/api/config/yaml"
+      pollInterval = "5s"
+    ```
+    - 动态配置来自于tests/http-config服务，返回yaml配置。
+4. 动态配置中使用forward-auth对请求进行权限判断
+    ```yaml
+      middlewares:
+        my-app:
+          forwardAuth:
+            address: http://localhost:8000/api/auth/token
+            trustForwardHeader: true
+            authResponseHeadersRegex: ^X-
+            authResponseHeaders:
+              - "jk-xxxx"
+              - "jk-Header"
+    
+    ```
+    - 请求被拦截到接口`http://localhost:8000/api/auth/token`
+    - 根据authResponseHeadersRegex，authResponseHeaders配置设置header
+5. 访问测试
+    ```shell
+      curl --location 'http://localhost:8099/api/authtest/test'
+    ```
+   打印日志信息
+    ```text
+    ============token===================//auth认证接口打印日志
+    ('host', 'localhost:8000')//auth认证服务可以获取到目标服务host
+    ('user-agent', 'PostmanRuntime/7.36.0')
+    ('accept', '*/*')
+    ('accept-encoding', 'gzip, deflate, br')
+    ('postman-token', '56362e19-85a0-45f4-98ab-e180786b015b')
+    ('x-forwarded-for', '::1')
+    ('x-forwarded-host', 'localhost:8099')
+    ('x-forwarded-method', 'GET')
+    ('x-forwarded-port', '8099')
+    ('x-forwarded-proto', 'http')
+    ('x-forwarded-server', 'Gavin-MacBook-Pro.local')
+    ('x-forwarded-uri', '/api/authtest/test') //auth认证服务可以获取到访问的url
+    ('x-real-ip', '::1')
+    
+    ============test===================//最终目标服务接口打印日志
+    ('host', 'localhost:8000')
+    ('user-agent', 'PostmanRuntime/7.36.0')
+    ('accept', '*/*')
+    ('accept-encoding', 'gzip, deflate, br')
+    ('jk-header', 'ffffff') //为auth认证接口返回的数据
+    ('jk-xxxx', 'xxxx') //为auth认证接口返回的数据
+    ('postman-token', '56362e19-85a0-45f4-98ab-e180786b015b')
+    ('x-custom-header', 'Some custom value') //为auth认证接口返回的数据
+    ('x-forwarded-for', '::1')
+    ```
