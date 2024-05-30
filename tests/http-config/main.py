@@ -3,7 +3,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
-from api.routes import router2 as front_router
 from api.routes import router as api_router
 from logger import DVStreamHandler
 
@@ -47,7 +46,6 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix=settings.api_prefix)
-app.include_router(front_router)
 # app.include_router(health_router)
 
 

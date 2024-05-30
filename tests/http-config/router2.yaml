@@ -1,0 +1,57 @@
+http:
+  routers:
+    gateway:
+      rule: PathPrefix(`/gateway/swagger`)
+      service: gateway
+      middlewares:
+        - stripPrefix-gateway
+    gs:
+      rule: PathPrefix(`/swagger`)
+      service: gateway
+      middlewares:
+        - add-gateway
+    assistant:
+      rule: PathPrefix(`/assistant`)
+      service: assistant
+      middlewares:
+        - stripPrefix-assistant
+    front:
+      rule: PathPrefix(`/`)
+      service: front
+
+  middlewares:
+    my-app:
+      forwardAuth:
+        address: http://localhost:8000/api/auth/token
+        trustForwardHeader: true
+        authResponseHeadersRegex: ^X-
+        authResponseHeaders:
+          - "jk-xxxx"
+          - "jk-Header"
+
+    stripPrefix-gateway:
+      stripPrefix:
+        prefixes:
+          - "/gateway"
+
+    stripPrefix-assistant:
+      stripPrefix:
+        prefixes:
+          - "/assistant"
+    add-gateway:
+      addPrefix:
+        prefix: "/gateway"
+
+  services:
+    gateway:
+      loadBalancer:
+        servers:
+          - url: http://10.0.2.71:8100
+    assistant:
+      loadBalancer:
+        servers:
+          - url: http://10.0.2.71:8000
+    front:
+      loadBalancer:
+        servers:
+          - url: http://10.0.2.71:8000
